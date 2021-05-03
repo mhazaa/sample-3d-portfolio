@@ -1,0 +1,154 @@
+/*
+font-weights: 300, 400, 700, 900
+*/
+
+$fast-transition: 1s;
+$slow-transition: 3s;
+$background-color: #2D2D2D;
+
+body {
+  background: $background-color;
+  font-size: 16px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+  }
+}
+
+.main {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+svg {
+  position: absolute;
+}
+
+h1, h2, h3, a, p {
+  font-family: 'dystopian', sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: white;
+  user-select: none;
+
+}
+h1 {
+  font-size: 1.5em;
+}
+h2 {
+  font-size: 5em;
+}
+h3 {
+  font-size: 8em;
+}
+a, p {
+  font-size: 1.5em;
+}
+
+@mixin opacity-transition($duration) {
+  will-change: opacity;
+  transition: opacity $duration ease;
+}
+
+@mixin transform-transition {
+  will-change: transform;
+  transition: transform $slow-transition ease;
+}
+
+@mixin fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+canvas {
+  @include opacity-transition($fast-transition);
+  position: absolute;
+  z-index: -1;
+}
+
+.text {
+  @include opacity-transition($slow-transition);
+  position: relative;
+  text-align: center;
+
+  .outline {
+    -webkit-text-stroke: 0.7px white;
+    color: rgba(0,0,0,0);
+  }
+
+  .fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+.text.logo {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  text-align: right;
+  cursor: pointer;
+}
+
+.about {
+  display: none;
+  width: 50%;
+}
+
+.menu {
+  @include fullscreen();
+  @include transform-transition();
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  >div {
+    position: absolute;
+  }
+
+  .text.center-title {
+    opacity: 0.2;
+  }
+
+  .nav {
+    display: flex;
+    justify-content: center;
+
+    .text {
+      opacity: 0.6;
+    }
+
+    .contactBanner, .aboutBanner {
+      position: absolute;
+    }
+
+    .buttons {
+      position: absolute;
+      width: 100%;
+      top: 100%;
+      display: flex;
+      justify-content: center;
+
+      p {
+        padding: 0 5px;
+        opacity: 0.5;
+      }
+
+      a {
+        @include opacity-transition($fast-transition);
+        opacity: 0.5;
+        cursor: pointer;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
