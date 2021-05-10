@@ -8,7 +8,7 @@
     "build": "webpack"
   },
   "keywords": [],
-  "author": "",
+  "author": "Magdi Hazaa",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1"

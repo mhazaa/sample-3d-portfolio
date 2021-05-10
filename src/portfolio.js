@@ -1,4 +1,5 @@
 import { lerp, mousePos } from './modules';
+
 const scene = new THREE.Scene();
 const objLoader = new THREE.OBJLoader();
 
@@ -15,14 +16,14 @@ class Camera extends THREE.PerspectiveCamera {
 		if (this.needsUpdate === false) return;
 
 		this.rotationTarget.x = mousePos.y / window.innerHeight / 3;
-		this.rotationTarget.z = mousePos.x / window.innerWidth;
+		this.rotationTarget.z = mousePos.x / window.innerWidth / 2;
 
 		this.position.x = lerp(this.position.x, this.positionTarget.x, this.lerpSpeed);
-		this.position.y = lerp(this.position.y, this.positionTarget.y, this.lerpSpeed);
+		// this.position.y = lerp(this.position.y, this.positionTarget.y, this.lerpSpeed);
 		this.position.z = lerp(this.position.z, this.positionTarget.z, this.lerpSpeed);
 
 		this.rotation.x = lerp(this.rotation.x, this.rotationTarget.x, this.lerpSpeed);
-		this.rotation.y = lerp(this.rotation.y, this.rotationTarget.y, this.lerpSpeed);
+		// this.rotation.y = lerp(this.rotation.y, this.rotationTarget.y, this.lerpSpeed);
 		this.rotation.z = lerp(this.rotation.z, this.rotationTarget.z, this.lerpSpeed);
 	}
 }
@@ -37,7 +38,6 @@ keyboardInput();
 
 const renderer = new THREE.WebGLRenderer({ alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
 
 window.addEventListener('resize', () => {
 	camera.aspect = window.innerWidth / window.innerHeight;
@@ -62,10 +62,9 @@ class Model extends THREE.Object3D {
 					node.material.transparent = true;
 				};
 			});
-
 			this.add(object);
-			scene.add(this);
 		});
+
 		scene.add(this);
 
 		this.lerpSpeed = 0.03;
@@ -152,6 +151,17 @@ class Carousel {
 		this.xDistance = xDistance;
 		this.zDistance = yDistance;
 		this.needsUpdate = needsUpdate;
+		this.halt = false;
+		this.haltTimeout = null;
+		this.delay = 1000;
+		this.input();
+	}
+
+	input () {
+		window.addEventListener('keyup', (e) => {
+			if (e.code === 'ArrowLeft') this.previous();
+			if (e.code === 'ArrowRight') this.next();
+		});
 	}
 
 	addModels (srcArray) {
@@ -169,28 +179,41 @@ class Carousel {
 		});
 	}
 
+	applyHalt () {
+		this.halt = true;
+		clearTimeout(this.haltTimeout);
+		this.haltTimeout = setTimeout(() => {
+			this.halt = false;
+		}, this.delay);
+	}
+
 	next () {
+		if (this.halt) return;
+
 		this.models.forEach((model) => {
 			let n = model.carouselPosition + 1;
 			if (n === this.models.length) n = 0;
 			model.updateCarouselPosition(n, this.xDistance, this.zDistance);
 		});
+
+		this.applyHalt();
 	}
 
 	previous () {
+		if (this.halt) return;
+
 		this.models.forEach((model) => {
 			let n = model.carouselPosition - 1;
 			if (n === -1) n = this.models.length - 1;
 			model.updateCarouselPosition(n, this.xDistance, this.zDistance);
 		});
+
+		this.applyHalt();
 	}
 
 	update () {
 		if (this.needsUpdate === false) return;
-
-		this.models.forEach((model) => {
-			model.update();
-		});
+		this.models.forEach((model) => model.update());
 	}
 }
 

@@ -24,6 +24,8 @@ class SVGMask {
 		let p = '';
 		this.points.forEach( point => p += `${point.x} ${point.y} ` );
 		this.polygon.setAttribute('points', p);
+
+		this.element.style.visibility = 'visible';
 	}
 
 	createMask (element) {
@@ -103,6 +105,8 @@ class Text extends DomAnimations {
 		this.outline = new SVGMask(this.outlineElement, options.outline);
 		this.fillElement = this.containerElement.querySelector('.fill');
 		this.fill = new SVGMask(this.fillElement, options.fill);
+
+		this.containerElement.style.visibility = 'visible';
 	}
 
 	hideOutline (speed) {

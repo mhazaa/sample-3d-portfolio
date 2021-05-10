@@ -6,11 +6,25 @@ export default {
 	name: document.querySelector('.name'),
 	tagline: document.querySelector('.tagline'),
 	nav: document.querySelector('.nav'),
-	workBanner: document.querySelector('.nav .workBanner'),
-	contactBanner: document.querySelector('.nav .contactBanner'),
-	aboutBanner: document.querySelector('.nav .aboutBanner'),
 	navButtons: document.querySelector('.nav .buttons'),
-	contactButton: document.querySelector('.buttons .contactButton'),
-	aboutButton: document.querySelector('.buttons .aboutButton'),
-	about: document.querySelector('.about')
+
+	buttons: {
+		work: document.querySelector('.buttons .workButton'),
+		about: document.querySelector('.buttons .aboutButton'),
+		contact: document.querySelector('.buttons .contactButton')
+	},
+
+	banners: {
+		work: document.querySelector('.nav .workBanner'),
+		about: document.querySelector('.nav .aboutBanner'),
+		contact: document.querySelector('.nav .contactBanner')
+	},
+
+	pages: {
+		work: document.querySelector('.page.work'),
+		about: document.querySelector('.page.about'),
+		contact: document.querySelector('.page.contact')
+	},
+
+	aboutPageParagraph: document.querySelector('.page.about div p')
 };
