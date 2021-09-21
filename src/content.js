@@ -6,8 +6,6 @@ export default {
   `,
 	work: [
 		'./assets/Magma_Hills.obj',
-		'./assets/Magma_Hills.obj',
-		'./assets/Magma_Hills.obj',
 		'./assets/Magma_Hills.obj'
 	]
 };

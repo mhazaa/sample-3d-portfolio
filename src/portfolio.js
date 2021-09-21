@@ -1,7 +1,9 @@
+import * as THREE from 'three';
 import { lerp, mousePos } from './modules';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 const scene = new THREE.Scene();
-const objLoader = new THREE.OBJLoader();
+const objectLoader = new OBJLoader();
 
 class Camera extends THREE.PerspectiveCamera {
 	constructor () {
@@ -53,8 +55,11 @@ class Model extends THREE.Object3D {
 	constructor (src) {
 		super();
 		this.material = null;
+		this.loaded = false;
+		this.loadPercent = 0;
 
-		objLoader.load(src, (object) => {
+		objectLoader.load(src, (object) => {
+			this.loaded = true;
 			object.traverse((node) => {
 				if (node.material) {
 					node.material.side = THREE.DoubleSide;
@@ -63,7 +68,7 @@ class Model extends THREE.Object3D {
 				};
 			});
 			this.add(object);
-		});
+		}, (xhr) => this.inProgress(xhr), this.onError);
 
 		scene.add(this);
 
@@ -71,6 +76,14 @@ class Model extends THREE.Object3D {
 		this.rotationTarget = { x: 0, y: 0 };
 		this.spinRate = { x: 1, y: 1 };
 		this.offset = { x: 0, y: 0 };
+	}
+
+	inProgress (xhr) {
+		this.loadPercent = xhr.loaded / xhr.total * 100;
+	}
+
+	onError (error) {
+		console.error(error);
 	}
 
 	updateRotation () {
@@ -154,6 +167,8 @@ class Carousel {
 		this.halt = false;
 		this.haltTimeout = null;
 		this.delay = 1000;
+		this.loaded = false;
+		this.loadPercent = 0;
 		this.input();
 	}
 
@@ -211,9 +226,24 @@ class Carousel {
 		this.applyHalt();
 	}
 
+	loadingUpdate () {
+		this.loadPercent = 0;
+
+		let loaded = true;
+		this.models.forEach(model => {
+			this.loadPercent += model.loadPercent / this.models.length;
+			if (!model.loaded) loaded = false;
+		});
+
+		this.loaded = loaded;
+	}
+
 	update () {
-		if (this.needsUpdate === false) return;
-		this.models.forEach((model) => model.update());
+		if (!this.loaded) {
+			this.loadingUpdate();
+		} else if (this.needsUpdate === true) {
+			this.models.forEach(model => model.update());
+		}
 	}
 }
 

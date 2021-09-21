@@ -26,5 +26,10 @@ export default {
 		contact: document.querySelector('.page.contact')
 	},
 
-	aboutPageParagraph: document.querySelector('.page.about div p')
+	aboutPageParagraph: document.querySelector('.page.about div p'),
+
+	loadingBar: {
+		container: document.querySelector('.loadingBarContainer'),
+		fill: document.querySelector('.loadingBarContainer .loadingBarFill')
+	}
 };

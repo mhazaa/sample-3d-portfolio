@@ -41,6 +41,18 @@ const pages = {
 dom.name.style.opacity = 0;
 dom.tagline.style.opacity = 0;
 
+const activateCanvas = () => {
+	canvas.changeOpacity(1);
+	camera.needsUpdate = true;
+	carousel.needsUpdate = true;
+}
+
+const deactivateCanvas = () => {
+	canvas.changeOpacity(0);
+	camera.needsUpdate = false;
+	carousel.needsUpdate = false;
+}
+
 class Menu {
 	constructor () {
 		this.selected = 'work';
@@ -87,28 +99,17 @@ class Menu {
 				banners[this.selected].hideOutline(2);
 				pages[this.selected].changeOpacity(0);
 				dom.buttons[this.selected].classList.remove('selected');
-				(menuItem === 'work') ? this.activateCanvas() : this.deactivateCanvas();
+				(menuItem === 'work') ? activateCanvas() : deactivateCanvas();
 				this.selected = menuItem;
 				pages[this.selected].changeOpacity(1);
 				dom.buttons[this.selected].classList.add('selected');
 			});
 		});
 	}
-
-	activateCanvas () {
-		canvas.changeOpacity(1);
-		camera.needsUpdate = true;
-		carousel.needsUpdate = true;
-	}
-
-	deactivateCanvas () {
-		canvas.changeOpacity(0);
-		camera.needsUpdate = false;
-		carousel.needsUpdate = false;
-	}
 }
 
 const animations = async () => {
+	dom.loadingBar.container.style.opacity = 0;
 	await hold(1);
 	name.changeOpacity(1);
 	name.showFill();
@@ -119,9 +120,7 @@ const animations = async () => {
 	name.hideFill();
 	tagline.changeOpacity(1);
 	tagline.showFill();
-	canvas.changeOpacity(1);
-	carousel.needsUpdate = true;
-	camera.needsUpdate = true;
+	activateCanvas();
 	await hold(4000);
 	tagline.hideFill();
 	tagline.hideOutline();
@@ -135,19 +134,29 @@ const init = () => {
 	animations();
 };
 
+let loaded = false;
+
 const loop = () => {
 	window.requestAnimationFrame(loop);
 
-	all.forEach((obj) => {
+	carousel.update();
+
+	if (!loaded) {
+		if (!carousel.loaded) {
+			return dom.loadingBar.fill.style.transform = `scaleX(${carousel.loadPercent / 100})`;
+		} else {
+			loaded = true;
+			init();
+		}
+	}
+
+	camera.update();
+	renderer.render(scene, camera);
+
+	all.forEach(obj => {
 		obj.update();
 		obj.draw();
 	});
-
-	carousel.update();
-	camera.update();
-
-	renderer.render(scene, camera);
 };
 
-init();
 window.requestAnimationFrame(loop);
