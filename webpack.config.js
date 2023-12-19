@@ -6,15 +6,17 @@ const path = require('path');
 const polyfills = [];
 
 module.exports = {
-	entry: [...polyfills, './src/index.js'],
+	entry: [...polyfills, './src/js/index.js'],
 
 	output: {
-		path: path.resolve(__dirname, 'build'),
+		path: path.resolve(__dirname, 'src'),
 		filename: 'script.js',
 	},
 
 	devServer: {
-		contentBase: path.resolve(__dirname, 'build'),
+		static: {
+			directory: path.resolve(__dirname, 'src'),
+		},
 		port: 8000,
 	},
 
@@ -28,7 +30,15 @@ module.exports = {
 				use: {
 					loader: 'babel-loader'
 				}
-			}
+			},
+			{
+				test: /\.s[ac]ss$/i,
+				use: [
+					'style-loader',
+					'css-loader',
+					'sass-loader',
+				],
+			},
 		]
 	}
 };
